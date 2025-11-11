@@ -1,9 +1,15 @@
 import os
-from flask import Flask, request, render_template_string
+from flask import Flask, request, render_template_string, redirect
 import requests
 from datetime import datetime
 
 app = Flask(__name__)
+
+# Redirect Heroku URL to custom domain
+@app.before_request
+def redirect_heroku_to_custom_domain():
+    if request.host == 'wind-solar-postcode-forecast-384739c5c492.herokuapp.com':
+        return redirect(f'https://www.renewableforecast.co.uk{request.path}', code=301)
 
 # Function to convert full postcode to outward code using Postcodes.io
 def convert_to_outward_code(postcode):
