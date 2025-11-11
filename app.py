@@ -195,6 +195,38 @@ def generate_html_calendar(postcode, region_name):
             box-shadow: 0 0 6px rgba(50, 205, 50, 0.6);
         }
 
+        .postcode-form input[type="submit"]:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .loading-container {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 8px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #4CAF50;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+
         .calendar {
             display: grid;
             grid-template-columns: repeat(8, 1fr);  /* 8 tiles per row for larger screens */
@@ -289,10 +321,14 @@ def generate_html_calendar(postcode, region_name):
 </head>
 <body>
     <h2 class="header">48-Hour Renewable Energy Forecast: {{ region_name }}</h2>
-    <form method="post" class="postcode-form">
-        <input type="text" name="postcode" placeholder="Enter postcode">
-        <input type="submit" value="Check Forecast">
+    <form method="post" class="postcode-form" onsubmit="showLoading()">
+        <input type="text" name="postcode" placeholder="Enter postcode" required>
+        <input type="submit" id="submit-btn" value="Check Forecast">
     </form>
+    <div class="loading-container" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading forecast data...</div>
+    </div>
     <div class="calendar">
         {% for tile in tiles %}
             <div class="tile" style="background-color: {{ tile.color }};">
@@ -305,6 +341,13 @@ def generate_html_calendar(postcode, region_name):
     <footer>
         Data from National Grid ESO, Carbon Intensity API
     </footer>
+    <script>
+        function showLoading() {
+            document.getElementById('submit-btn').disabled = true;
+            document.getElementById('submit-btn').value = 'Loading...';
+            document.getElementById('loading').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
     '''
@@ -362,7 +405,7 @@ def index():
 
             form {
                 text-align: center;
-                margin-bottom: 0;  /* Adjust this to control space below the form */
+                margin-bottom: 0;
             }
 
             input[type="text"] {
@@ -390,7 +433,7 @@ def index():
                 border: none;
                 border-radius: 8px;
                 cursor: pointer;
-                margin-top: 10px;  /* Adjust the space between input and button */
+                margin-top: 10px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 transition: all 0.3s ease;
             }
@@ -400,6 +443,38 @@ def index():
                 box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
             }
 
+            input[type="submit"]:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+
+            .loading-container {
+                display: none;
+                margin-top: 20px;
+                text-align: center;
+            }
+
+            .spinner {
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #4CAF50;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 10px auto;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .loading-text {
+                color: #4CAF50;
+                font-size: 1.1em;
+                font-weight: bold;
+            }
+
             /* Mobile styling */
             @media (max-width: 768px) {
                 h1 {
@@ -407,21 +482,32 @@ def index():
                 }
 
                 input[type="text"] {
-                    width: 80%;  /* Adjust width for mobile devices */
+                    width: 80%;
                 }
 
                 input[type="submit"] {
-                    width: 70%;  /* Adjust button size for mobile */
+                    width: 70%;
                 }
             }
         </style>
     </head>
     <body>
         <h1>48-Hour Renewable Energy Forecast</h1>
-        <form method="post">
-            <input type="text" id="postcode" name="postcode" placeholder="Enter postcode"><br>
-            <input type="submit" value="Check Forecast">
+        <form method="post" onsubmit="showLoading()">
+            <input type="text" id="postcode" name="postcode" placeholder="Enter postcode" required><br>
+            <input type="submit" id="submit-btn" value="Check Forecast">
         </form>
+        <div class="loading-container" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading forecast data...</div>
+        </div>
+        <script>
+            function showLoading() {
+                document.getElementById('submit-btn').disabled = true;
+                document.getElementById('submit-btn').value = 'Loading...';
+                document.getElementById('loading').style.display = 'block';
+            }
+        </script>
     </body>
     </html>
     '''
